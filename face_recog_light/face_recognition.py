@@ -9,7 +9,7 @@ from PIL import Image
 import numpy as np
 import json
 
-MODEL_FILENAME = 'facenet.tflite'
+MODEL_FILENAME = 'sandberg_model-20180402-114759.ckpt-275.tflite'
 MODELS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'models'))
 
 # Load TFLite model and allocate tensors.
@@ -33,6 +33,7 @@ def align_face(face_crop):
     pass
 
 def encoding_from_face(aligned_face):
+    "Return the embedding as well as the model name used to generate it."
 
     img_160 = aligned_face.resize((160, 160), resample=Image.LANCZOS)
     img_160_arr = np.array(img_160)
@@ -41,7 +42,7 @@ def encoding_from_face(aligned_face):
     interpreter.set_tensor(input_details[0]['index'], input_data)
     interpreter.invoke()
     output_data = interpreter.get_tensor(output_details[0]['index'])
-    return json.dumps(output_data.tolist()[0])
+    return json.dumps(output_data.tolist()[0]), MODEL_FILENAME
 
 def encodings_from_image(raw_image):
     "Implement this as a generator"
